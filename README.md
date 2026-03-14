@@ -3,12 +3,15 @@ This is a Linux Docker image for the PaperMC Minecraft server.
 
 PaperMC is an optimized Minecraft server with plugin support (Bukkit, Spigot, Sponge, etc.).
 This image provides a basic PaperMC server. All customizations are left to the user.
+
+## Fork changes
+- Use Eclipse-Temurin image for better architecture support
 # Usage
 It is assumed that the user has already acquired a working Docker installation. If that is not the case, go do that and come back here when you're done.
 ## Command
 With this image, you can create a new PaperMC Minecraft server with one command (note that running said command indicates agreement to the Minecraft EULA). Here is an example:
 
-```sudo docker run -p 25565:25565 phyremaster/papermc```
+```sudo docker run -p 25565:25565 -e MINECRAFT_VERSION=1.21.11 -v ./volumes:/papermc scratchcat1/papermc:latest```
 
 While this command will work just fine in many cases, it is only the bare minimum required to start a functional server and can be vastly improved by specifying some...
 ## Options
@@ -40,6 +43,12 @@ There are several command line options that users may want to specify when utili
 - Name
   - Set this to a name for the container (defaults to a couple of random words).
   - `--name "<my-container-name>"`
+- Stop timeout
+  - *Important to prevent corruption while shutting down the server without the console*
+  - By default Docker sends a SIGTERM, waits 10 seconds and then kills the container if it hasn't stopped.
+  - For large maps or slow disks the saving process may take more than 10 seconds.
+  - Up the timeout with the following command:
+  - `--stop-timeout <seconds-to-wait>`
 
 There is one more command line option, but it is a bit special and deserves its own section.
 ### Environment Variables

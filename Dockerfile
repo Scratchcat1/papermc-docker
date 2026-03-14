@@ -1,23 +1,19 @@
-# JRE base
-FROM openjdk:16-slim
+FROM eclipse-temurin:25-jre
 
 # Environment variables
-ENV MC_VERSION="latest" \
-    PAPER_BUILD="latest" \
-    MC_RAM="" \
+ENV MC_RAM="" \
     JAVA_OPTS=""
 
-COPY papermc.sh .
-RUN apt-get update \
-    && apt-get install -y wget \
-    && apt-get install -y jq \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir /papermc
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  apt update && apt-get --no-install-recommends install -y curl jq
 
-# Start script
-CMD ["sh", "./papermc.sh"]
+RUN mkdir /papermc
+WORKDIR /papermc
+COPY start.sh /start.sh
 
 # Container setup
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
-VOLUME /papermc
+# Start script
+ENTRYPOINT [ "/start.sh" ]
